@@ -958,6 +958,22 @@ bool CIRCSock::OnNumericMessage(CNumericMessage& Message) {
 			}
 			break;
 		}
+		case 479: { 
+			// ERR_BADCHANNAME (juped channels or illegal channel name - ircd hybrid)
+			// prevent some modules from getting into an infinite loop of trying to join it.
+			// :irc.network.net 479 mynick #channel :Illegal channel name
+
+			CString sChan = sRest.Token(0);
+			CChan* pChan = m_pNetwork->FindChan(sChan);
+			if (pChan != NULL) {
+				pChan->Disable();
+			}
+
+			m_pNetwork->PutStatus("Channel [" + sChan + "] cannot be joined. "
+				"Disabling the channel.");
+			m_pNetwork->PutIRC("PART " + sChan);
+			break;
+		}
 		case 670:
 			// :hydra.sector5d.org 670 kylef :STARTTLS successful, go ahead with TLS handshake
 			// 670 is a response to `STARTTLS` telling the client to switch to TLS
