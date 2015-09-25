@@ -328,23 +328,27 @@ void CUtils::PrintMessage(const CString& sMessage, bool bStrong) {
 	fflush(stdout);
 }
 
-void CUtils::PrintAction(const CString& sMessage) {
+void CUtils::PrintAction(const CString& sMessage, bool bAppendLinefeed) {
 	if (CDebug::StdoutIsTTY())
-		fprintf(stdout, BOLD BLU "[ .. " BLU "]" DFL NORM " %s...\n", sMessage.c_str());
+		fprintf(stdout, BOLD BLU "[ .. " BLU "]" DFL NORM " %s...%s", sMessage.c_str(), bAppendLinefeed ? "\n" : "");
 	else
 		fprintf(stdout, "%s... ", sMessage.c_str());
 	fflush(stdout);
 }
 
+void CUtils::PrintAction(const CString& sMessage) {
+	CUtils::PrintAction(sMessage, false);
+}
+
 void CUtils::PrintStatus(bool bSuccess, const CString& sMessage) {
 	if (CDebug::StdoutIsTTY()) {
 		if (bSuccess) {
-			fprintf(stdout,  BOLD BLU "[" GRN " >> " BLU "]" DFL NORM);
-			fprintf(stdout, " %s\n", sMessage.empty() ? "ok" : sMessage.c_str());
+			if (!sMessage.empty()) 
+				fprintf(stdout, "\n" BOLD BLU "[" GRN " >> " BLU "]" DFL NORM " %s", sMessage.c_str());
 		} else {
-			fprintf(stdout,  BOLD BLU "[" RED " !! " BLU "]" DFL NORM);
-			fprintf(stdout,  BOLD RED " %s" DFL NORM "\n", sMessage.empty() ? "failed" : sMessage.c_str());
+			fprintf(stdout, sMessage.empty() ? " failed\n" : "\n" BOLD BLU "[" RED " !! " BLU "]" DFL NORM BOLD RED " %s" DFL NORM, sMessage.c_str());
 		}
+		fprintf(stdout, "\n");
 	} else {
 		if (bSuccess) {
 			fprintf(stdout, "%s\n", sMessage.c_str());

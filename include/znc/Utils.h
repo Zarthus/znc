@@ -51,6 +51,7 @@ public:
 	static void PrintMessage(const CString& sMessage, bool bStrong = false);
 	static void PrintPrompt(const CString& sMessage);
 	static void PrintAction(const CString& sMessage);
+	static void PrintAction(const CString& sMessage, bool bAppendLinefeed);
 	static void PrintStatus(bool bSuccess, const CString& sMessage = "");
 
 #ifndef SWIGPERL
