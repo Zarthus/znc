@@ -32,12 +32,15 @@
  *
  *  @param f The expression you want to display.
  */
-#define DEBUG(f)                 \
-    do {                         \
-        if (CDebug::Debug()) {   \
-            CDebugStream sDebug; \
-            sDebug << f;         \
-        }                        \
+#define DEBUG(f)                            \
+    do {                                    \
+        if (CDebug::Debug()) {              \
+            CDebugStream sDebug;            \
+            sDebug << f;                    \
+            if (debugHandler != nullptr) {  \
+                debugHandler(CString(f));   \
+            }                               \
+        }                                   \
     } while (0)
 
 class CDebug {
@@ -47,11 +50,13 @@ class CDebug {
     static void SetDebug(bool b) { debug = b; }
     static bool Debug() { return debug; }
 
+    static void RegisterDebugHandler(const CModCommand& Command) { debugHandler = Command; }
     static CString Filter(const CString& sUnfilteredLine);
 
   protected:
     static bool stdoutIsTTY;
     static bool debug;
+    static CModCommand debugHandler;
 };
 
 class CDebugStream : public std::ostringstream {
